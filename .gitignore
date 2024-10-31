@@ -16,3 +16,6 @@ data/
 build/
 dist/
 *.egg-info/
+
+# Arquivos de banco de dados
+data/*.db
