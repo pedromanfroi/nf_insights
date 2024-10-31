@@ -1,4 +1,5 @@
 from lxml import etree
+from datetime import datetime
 
 def parse_nfe_xml(file_path):
     namespaces = {'ns': 'http://www.portalfiscal.inf.br/nfe'}
@@ -6,27 +7,36 @@ def parse_nfe_xml(file_path):
     root = tree.getroot()
 
     # Extrair data da compra
-    data_compra = root.find('.//ns:ide/ns:dhEmi', namespaces)
-    if data_compra is not None:
-        data_compra = data_compra.text
+    data_compra_elem = root.find('.//ns:ide/ns:dhEmi', namespaces)
+    if data_compra_elem is not None:
+        data_compra_iso = data_compra_elem.text
+        # Converter para objeto datetime
+        data_compra_dt = datetime.fromisoformat(data_compra_iso)
+        # Formatar para DD/MM/YYYY
+        data_compra = data_compra_dt.strftime('%d/%m/%Y')
+    else:
+        data_compra = None
 
     # Extrair fornecedor
-    fornecedor = root.find('.//ns:emit/ns:xNome', namespaces)
-    if fornecedor is not None:
-        fornecedor = fornecedor.text
+    fornecedor_elem = root.find('.//ns:emit/ns:xNome', namespaces)
+    fornecedor = fornecedor_elem.text if fornecedor_elem is not None else None
 
     items = []
     # Extrair itens
     for det in root.findall('.//ns:det', namespaces):
-        produto = det.find('.//ns:prod/ns:xProd', namespaces)
-        quantidade = det.find('.//ns:prod/ns:qCom', namespaces)
+        produto_elem = det.find('.//ns:prod/ns:xProd', namespaces)
+        quantidade_elem = det.find('.//ns:prod/ns:qCom', namespaces)
+        ncm_elem = det.find('.//ns:prod/ns:NCM', namespaces)
+        valor_unitario_elem = det.find('.//ns:prod/ns:vUnCom', namespaces)
 
-        if produto is not None and quantidade is not None:
+        if produto_elem is not None and quantidade_elem is not None:
             item = {
                 'data_compra': data_compra,
                 'fornecedor': fornecedor,
-                'item': produto.text,
-                'quantidade_comprada': quantidade.text
+                'item': produto_elem.text,
+                'quantidade_comprada': quantidade_elem.text,
+                'ncm': ncm_elem.text if ncm_elem is not None else None,
+                'valor_unitario': valor_unitario_elem.text if valor_unitario_elem is not None else None
             }
             items.append(item)
 

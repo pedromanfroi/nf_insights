@@ -20,10 +20,12 @@ def main():
             # Inserir dados no banco
             for item_data in items:
                 compra = Compra(
-                    data_compra=datetime.fromisoformat(item_data['data_compra']),
+                    data_compra=item_data['data_compra'],  # Já no formato DD/MM/YYYY
                     fornecedor=item_data['fornecedor'],
                     item=item_data['item'],
-                    quantidade_comprada=float(item_data['quantidade_comprada'])
+                    quantidade_comprada=float(item_data['quantidade_comprada']),
+                    ncm=item_data['ncm'],
+                    valor_unitario=float(item_data['valor_unitario'])
                 )
                 session.add(compra)
 
