@@ -16,7 +16,9 @@ class Compra(Base):
 def get_engine():
     return create_engine('sqlite:///data/compras.db')
 
-def create_tables(engine):
+def create_tables(engine=None):
+    if engine is None:
+        engine = get_engine()
     Base.metadata.create_all(engine)
 
 def get_session():

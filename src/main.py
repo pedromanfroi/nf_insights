@@ -5,7 +5,7 @@ from database import create_tables, get_session, Compra
 
 def main():
     # Criar as tabelas no banco de dados
-    create_tables(None)
+    create_tables()
     session = get_session()
 
     # Diretório com os arquivos XML
