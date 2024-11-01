@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
+import json
 
 Base = declarative_base()
 
@@ -34,3 +35,20 @@ def get_session():
     engine = get_engine()
     Session = sessionmaker(bind=engine)
     return Session()
+
+def importar_ncm_json(json_file_path, engine):
+    with open(json_file_path, 'r', encoding='utf-8') as file:
+        ncm_data = json.load(file)
+
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    for ncm_entry in ncm_data:
+        ncm = NCM(
+            codigo=ncm_entry['codigo'],
+            descricao=ncm_entry['descricao']
+        )
+        session.merge(ncm)  # Usa merge para evitar duplicatas
+
+    session.commit()
+    session.close()
