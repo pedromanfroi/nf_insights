@@ -14,6 +14,13 @@ class Compra(Base):
     unidade = Column(String)  # Nova coluna 'unidade'
     ncm = Column(String)
     valor_unitario = Column(Float)
+    descricao_ncm = Column(String)  # Nova coluna
+    
+class NCM(Base):
+    __tablename__ = 'ncm'
+
+    codigo = Column(String, primary_key=True)
+    descricao = Column(String)
 
 def get_engine():
     return create_engine('sqlite:///data/compras.db')
