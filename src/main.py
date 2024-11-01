@@ -27,13 +27,17 @@ def main():
 
             # Inserir dados no banco
             for item_data in items:
-                # Obter a descrição NCM a partir do código
                 ncm_codigo = item_data['ncm']
                 ncm_descricao = None
                 if ncm_codigo:
-                    ncm_obj = session.query(NCM).filter_by(codigo=ncm_codigo).first()
+                    # Remover pontos e traços do código NCM extraído do XML
+                    ncm_codigo_sem_pontos = ncm_codigo.replace('.', '').replace('-', '').strip()
+                    # Buscar a descrição usando o código sem pontos
+                    ncm_obj = session.query(NCM).filter_by(codigo=ncm_codigo_sem_pontos).first()
                     if ncm_obj:
                         ncm_descricao = ncm_obj.descricao
+                    else:
+                        print(f"Descrição não encontrada para NCM: {ncm_codigo}")
 
                 compra = Compra(
                     data_compra=item_data['data_compra'],
@@ -43,7 +47,7 @@ def main():
                     unidade=item_data['unidade'],
                     ncm=ncm_codigo,
                     valor_unitario=float(item_data['valor_unitario']) if item_data['valor_unitario'] else None,
-                    descricao_ncm=ncm_descricao  # Preenche a descrição NCM
+                    descricao_ncm=ncm_descricao
                 )
                 session.add(compra)
 

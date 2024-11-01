@@ -38,17 +38,36 @@ def get_session():
 
 def importar_ncm_json(json_file_path, engine):
     with open(json_file_path, 'r', encoding='utf-8') as file:
-        ncm_data = json.load(file)
+        data = json.load(file)
+
+    # Acessar a lista de nomenclaturas
+    ncm_list = data.get('Nomenclaturas', [])
+    print(f"Total de nomenclaturas encontradas: {len(ncm_list)}")
 
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    for ncm_entry in ncm_data:
-        ncm = NCM(
-            codigo=ncm_entry['codigo'],
-            descricao=ncm_entry['descricao']
-        )
-        session.merge(ncm)  # Usa merge para evitar duplicatas
+    contador = 0
+
+    for ncm_entry in ncm_list:
+        codigo = ncm_entry.get('Codigo')
+        descricao = ncm_entry.get('Descricao')
+
+        if codigo and descricao:
+            # Remover os pontos do código NCM
+            codigo_sem_pontos = codigo.replace('.', '').replace('-', '').strip()
+            descricao = descricao.strip()
+
+            ncm = NCM(
+                codigo=codigo_sem_pontos,
+                descricao=descricao
+            )
+            session.merge(ncm)
+            contador += 1
+        else:
+            print(f"Dados incompletos em ncm_entry: {ncm_entry}")
 
     session.commit()
     session.close()
+
+    print(f"Total de NCMs inseridos: {contador}")
