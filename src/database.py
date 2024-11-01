@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
-from datetime import datetime
 
 Base = declarative_base()
 
@@ -8,12 +7,13 @@ class Compra(Base):
     __tablename__ = 'compras'
 
     id = Column(Integer, primary_key=True)
-    data_compra = Column(String)  # Alterado de DateTime para String
+    data_compra = Column(String)
     fornecedor = Column(String)
     item = Column(String)
     quantidade_comprada = Column(Float)
-    ncm = Column(String)  # Nova coluna NCM
-    valor_unitario = Column(Float)  # Nova coluna Valor Unitário
+    unidade = Column(String)  # Nova coluna 'unidade'
+    ncm = Column(String)
+    valor_unitario = Column(Float)
 
 def get_engine():
     return create_engine('sqlite:///data/compras.db')

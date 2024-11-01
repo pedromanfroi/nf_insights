@@ -26,6 +26,7 @@ def parse_nfe_xml(file_path):
     for det in root.findall('.//ns:det', namespaces):
         produto_elem = det.find('.//ns:prod/ns:xProd', namespaces)
         quantidade_elem = det.find('.//ns:prod/ns:qCom', namespaces)
+        unidade_elem = det.find('.//ns:prod/ns:uCom', namespaces)  # Nova linha para extrair 'unidade'
         ncm_elem = det.find('.//ns:prod/ns:NCM', namespaces)
         valor_unitario_elem = det.find('.//ns:prod/ns:vUnCom', namespaces)
 
@@ -35,6 +36,7 @@ def parse_nfe_xml(file_path):
                 'fornecedor': fornecedor,
                 'item': produto_elem.text,
                 'quantidade_comprada': quantidade_elem.text,
+                'unidade': unidade_elem.text if unidade_elem is not None else None,  # Adiciona 'unidade' ao item
                 'ncm': ncm_elem.text if ncm_elem is not None else None,
                 'valor_unitario': valor_unitario_elem.text if valor_unitario_elem is not None else None
             }
